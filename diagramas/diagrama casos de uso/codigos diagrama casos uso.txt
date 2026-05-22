@@ -1,0 +1,75 @@
+@startuml
+left to right direction
+
+' ==========================================
+' ACTORES 
+' ==========================================
+actor "Usuario General" as G
+actor "Cliente" as C
+actor "Agricultor" as A
+actor "Repartidor" as R
+
+' Herencia de actores (Todos heredan las acciones generales)
+G <|-- C
+G <|-- A
+G <|-- R
+
+' ==========================================
+' SISTEMA Y CASOS DE USO
+' ==========================================
+package "Sistema de Gestión de Pedidos y Productos" {
+    
+    ' Casos de Uso Generales
+    usecase "Iniciar Sesión" as UC_Login
+    usecase "Registrarse" as UC_Registro
+    usecase "Estados Pedido" as UC_Estado
+    
+    ' Casos de Uso del Cliente
+    usecase "Buscar Productos" as UC_Buscar
+    usecase "Gestionar Carrito" as UC_Carrito
+    usecase "Realizar Pedido" as UC_Pedido
+    usecase "Añadir Reseña" as UC_Resena
+    usecase "Registrar Incidencia" as UC_Incidencia
+    usecase "Ver Producto" as UC_Detalles
+    usecase "Ver Perfil" as UC_Perfil
+    usecase "Ver Seguimiento Pedido" as UC_Seguimiento
+    
+    ' Casos de Uso del Agricultor
+    usecase "Publicar / Gestionar Producto" as UC_Gestion_Prod
+    usecase "Gestionar Stock" as UC_Stock
+    usecase "Preparar Pedido" as UC_Preparar
+    
+    ' Casos de Uso del Repartidor
+    usecase "Actualizar Estado de Reparto" as UC_Estado_Reparto
+    usecase "Marcar como Entregado" as UC_Entregado
+    
+}
+
+' ==========================================
+' ASOCIACIONES (LÍNEAS EN NEGRO Y CONTINUAS)
+' ==========================================
+
+' Asociaciones del Usuario General (Aplica automáticamente a C, A y R)
+G --> UC_Login
+G --> UC_Registro
+G --> UC_Estado
+
+' Asociaciones exclusivas del Cliente
+C --> UC_Buscar
+C --> UC_Carrito
+C --> UC_Pedido
+C --> UC_Resena
+C --> UC_Incidencia
+C --> UC_Detalles
+C --> UC_Perfil
+C --> UC_Seguimiento
+
+' Asociaciones exclusivas del Agricultor
+A --> UC_Gestion_Prod
+A --> UC_Stock
+A --> UC_Preparar
+
+' Asociaciones exclusivas del Repartidor
+R --> UC_Estado_Reparto
+R --> UC_Entregado
+@enduml

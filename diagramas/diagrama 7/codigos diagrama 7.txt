@@ -1,0 +1,29 @@
+Diagrama actividad 7
+@startuml
+start
+:Acceder al historial de pedidos;
+:Seleccionar un pedido específico;
+
+:Mostrar detalle y estado actual del pedido;
+
+switch (Estado del pedido)
+case ( Pendiente )
+    if (¿Desea cancelar el pedido?) then (Sí)
+        :Confirmar cancelación;
+        :Reembolsar pago y notificar al agricultor;
+        stop
+    else (No)
+        :Esperar actualización de estado;
+    endif
+case ( Preparado / En reparto )
+    :Consultar información del transportista\ny hacer seguimiento;
+case ( Entregado )
+    :Ver confirmación de entrega\n(y QR/PIN si aplica);
+    :Marcar como recibido;
+    :Realizar valoración del pedido;
+case ( Cancelado )
+    :Revisar motivo de la cancelación\ny estado del reembolso;
+endswitch
+
+stop
+@enduml

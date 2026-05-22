@@ -1,0 +1,53 @@
+@startuml 
+
+title Diagrama de Actividad 15: Confirmación de Entrega 
+
+start
+
+:Llegar a la dirección del pedido;
+:Abrir detalle del pedido en la app;
+:Ver datos del cliente y productos a entregar;
+
+if (¿Tipo de entrega?) then (A domicilio)
+    :Entregar productos al cliente;
+    :Pulsar "Marcar como entregado";
+    
+    if (¿Confirmar entrega?) then (Sí)
+        :Cambiar estado a "Entregado";
+        :Notificar al cliente que su pedido ha llegado;
+        :Notificar al agricultor;
+        :Registrar entrega completada en historial del repartidor;
+        :Ver confirmación en pantalla;
+        stop
+    else (No)
+        :Cancelar acción;
+        stop
+    end if
+
+else (Punto de recogida)
+    :Depositar el pedido en el punto de recogida;
+    :Pulsar "Confirmar depósito en punto de recogida";
+    :Solicitar confirmación;
+    :Marcar pedido como disponible para recogida;
+    :Notificar al cliente con el código QR y PIN;
+    :Ver confirmación depósito;
+    
+    ' --- Fase de recogida por parte del cliente ---
+    :Recibir notificación de pedido disponible;
+    :Acudir al punto de recogida;
+    :Mostrar código QR o PIN;
+    :Verificar código QR o PIN;
+    
+    if (¿Código válido?) then (Sí)
+        :Marcar pedido como recogido;
+        :Notificar al agricultor;
+        :Registrar entrega completada;
+        :Recoger el pedido;
+        stop
+    else (No)
+        :Mostrar error código inválido;
+        stop
+    end if
+end if
+
+@enduml

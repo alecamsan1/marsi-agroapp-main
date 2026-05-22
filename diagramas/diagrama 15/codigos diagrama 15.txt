@@ -1,0 +1,46 @@
+Diagrama actividad 15
+@startuml 
+
+title Proceso de Gestión de Incidencias
+
+start
+
+:Seleccionar pedido afectado desde el historial;
+:Crear incidencia: describir problema\ny adjuntar evidencias (fotos/comentarios);
+:Registrar incidencia con estado "Abierta"\ny asignar código de ticket;
+
+:Notificar al equipo de soporte y al agricultor;
+:Soporte revisa el caso y las evidencias;
+
+if (¿Se requiere mediación o información extra?) then (Sí)
+  :Solicitar más información al cliente;
+  :Cliente aporta nuevos datos/fotos;
+else (No)
+endif
+
+if (¿Resolución de la incidencia?) then (Procedente / Favorable)
+  :Marcar incidencia como "Aceptada";
+  
+  switch (¿Tipo de compensación?)
+  case (Reembolso)
+    if (¿Método de pago original?) then (Contra reembolso)
+      :Acordar método de devolución del dinero;
+    else (Pago digital)
+      :Iniciar reembolso automático al método original;
+    endif
+  case (Reenvío de producto)
+    :Generar nuevo pedido de reemplazo a coste 0;
+    :Notificar al agricultor para nueva preparación;
+  endswitch
+
+else (Desestimada / Rechazada)
+  :Marcar incidencia como "Cerrada sin resolución";
+  :Notificar rechazo al cliente explicando los motivos;
+  stop
+endif
+
+:Confirmar resolución con el cliente;
+:Cambiar estado del ticket a "Resuelto / Cerrado";
+stop
+
+@enduml

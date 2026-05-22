@@ -1,0 +1,88 @@
+Diagrama actividad 3
+@startuml
+skinparam ArchimateBackgroundColor #ffffff
+title Diagrama de Actividad - Búsqueda y Filtrado
+
+start
+
+:Ver pantalla principal con todos los productos;
+
+switch (¿Cómo busca el usuario?)
+case (Por Texto)
+  :Escribir en el buscador;
+case (Por Valoraciones)
+  :Filtrar por puntuación de usuarios\n(Más valorados, estrellas, etc.);
+case (Por Categoría)
+  :Seleccionar categoría\n(Frutas / Verduras / Ofertas);
+endswitch
+
+:Procesar y aplicar filtros;
+
+if (¿Hay resultados disponibles?) then (No)
+  :Mostrar pantalla "Sin resultados";
+  stop
+else (Sí)
+  :Mostrar productos filtrados;
+endif
+
+if (¿Qué acción realiza el usuario?) then (Ver detalle)
+  :Ir a la pantalla de detalle del producto;
+  stop
+else (Acción rápida / Guardar)
+  if (¿Tipo de acción?) then (Añadir al carrito)
+    :Añadir producto al carrito;
+  else (Guardar en deseos)
+    :Guardar en lista de deseos;
+  endif
+endif
+
+:Seguir buscando en la aplicación;
+stop
+@enduml
+
+Diagrama secuencia 3
+@startuml
+title Diagrama de Secuencia - Búsqueda y Filtrado (Estructura Switch)
+
+actor Cliente
+participant "App / Interfaz" as App
+participant "Sistema / Servidor" as Sistema
+
+== Paso 1: Búsqueda y Selección (Equivalente al Switch) ==
+alt Caso: Búsqueda por Texto
+    Cliente -> App: Escribir en el buscador
+    App -> Sistema: Solicitar productos por coincidencia de texto
+else Caso: Búsqueda por Valoraciones
+    Cliente -> App: Seleccionar filtro de valoraciones (Ej: 4+ estrellas)
+    App -> Sistema: Solicitar productos filtrados por puntuación
+else Caso: Búsqueda por Categoría
+    Cliente -> App: Seleccionar categoría (Frutas, verduras...)
+    App -> Sistema: Solicitar productos de la categoría
+end
+
+Sistema --> App: Devolver lista de productos procesados
+
+== Paso 2: Visualización de Resultados ==
+alt ¿Hay resultados? -> No
+    App --> Cliente: Mostrar "Sin resultados"
+else ¿Hay resultados? -> Sí
+    App --> Cliente: Mostrar catálogo de productos filtrados
+end
+
+== Paso 3: Interacción con el Producto ==
+alt Opción A: Ver Detalle
+    Cliente -> App: Seleccionar un producto
+    App --> Cliente: Mostrar pantalla de detalle
+else Opción B: Añadir al carrito
+    Cliente -> App: Pulsar "Añadir al carrito"
+    App -> Sistema: Registrar producto en el carrito
+    Sistema --> App: Confirmación (Actualizar contador)
+    App --> Cliente: Mostrar producto añadido
+else Opción C: Lista de deseos
+    Cliente -> App: Pulsar "Guardar en deseos"
+    App -> Sistema: Registrar producto en lista de deseos
+    Sistema --> App: Confirmación
+    App --> Cliente: Mostrar producto guardado
+end
+
+@enduml

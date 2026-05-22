@@ -1,0 +1,85 @@
+Diagrama actividad 6
+@startuml
+skinparam ArchimateBackgroundColor #ffffff
+title Diagrama de Actividad - Proceso de Pago y Confirmación (Simplificado)
+
+start
+
+:Pulsar "Proceder al pago";
+:Introducir datos personales;
+
+if (¿Método de entrega?) then (A domicilio)
+  :Seleccionar o introducir dirección de entrega;
+else (Punto de recogida)
+  :Seleccionar punto de recogida en el mapa;
+endif
+
+:Seleccionar franja horaria preferida;
+:Ver resumen antes de pagar;
+:Seleccionar método de pago e introducir datos;
+:Pulsar "Confirmar y pagar";
+
+:Procesar pago en el sistema;
+
+if (¿Pago exitoso?) then (No)
+  :Mostrar error de pago;
+  :Reintentar con otro método o cancelar pedido;
+  stop
+else (Sí)
+  :Crear pedido en el sistema y asignar código;
+  :Notificar al agricultor;
+  :Enviar confirmación al cliente\n(Generar QR/PIN si es punto de recogida);
+  :Ver pantalla de confirmación y guardar código/PIN;
+  :Pulsar "Volver al inicio";
+  stop
+endif
+
+@enduml
+
+Diagrama secuencia 6
+@startuml
+title Diagrama de Secuencia - Proceso de Pago y Confirmación
+
+actor Cliente
+participant "App / Interfaz" as App
+participant "Sistema / Servidor" as Sistema
+
+== Paso 1: Configuración del Pedido ==
+Cliente -> App: Pulsar "Proceder al pago"
+App --> Cliente: Mostrar formulario de datos y entrega
+
+Cliente -> App: Introducir datos personales
+alt Método de entrega: A domicilio
+    Cliente -> App: Seleccionar o introducir dirección
+else Método de entrega: Punto de recogida
+    Cliente -> App: Seleccionar punto en el mapa
+end
+
+Cliente -> App: Seleccionar franja horaria
+App --> Cliente: Mostrar resumen de compra antes de pagar
+
+== Paso 2: Procesamiento del Pago ==
+Cliente -> App: Seleccionar método de pago, introducir datos y pulsar "Confirmar"
+App -> Sistema: Enviar solicitud de procesamiento de pago
+
+alt ¿Pago exitoso? -> No
+    Sistema --> App: Error en la transacción (Saldo, tarjeta rechazada, etc.)
+    App --> Cliente: Mostrar error de pago (Permitir reintentar o cancelar)
+else ¿Pago exitoso? -> Sí
+    Sistema -> Sistema: Crear pedido y asignar código único
+    Sistema -> Sistema: Enviar notificación al agricultor
+    Sistema --> App: Confirmación de pedido creado (Detalles y estado)
+    
+    == Paso 3: Confirmación y Lógica Especial ==
+    opt Si el método elegido fue "Punto de recogida"
+        Sistema -> Sistema: Generar código QR / código PIN de seguridad
+    end
+    
+    Sistema --> App: Enviar email de confirmación y datos finales
+    App --> Cliente: Mostrar pantalla de éxito (Con QR/PIN si corresponde)
+end
+
+== Paso 4: Cierre ==
+Cliente -> App: Pulsar "Volver al inicio"
+App --> Cliente: Redirigir a la pantalla principal de la aplicación
+@enduml

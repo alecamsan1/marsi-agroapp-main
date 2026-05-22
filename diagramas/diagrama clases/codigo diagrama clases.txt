@@ -1,0 +1,185 @@
+@startuml diagrama_clases_sin_relaciones_enum
+
+' --- CONFIGURACIÓN ESTÉTICA ---
+skinparam Handwritten false
+skinparam Shadowing false
+skinparam ClassBackgroundColor #FFFFFF
+skinparam ClassBorderColor #4B5563
+skinparam ClassFontColor #1F2937
+skinparam AttributeFontColor #555555
+skinparam ArrowColor #000000
+
+title Diagrama de Clases Integral (Sin Relaciones en Enums)
+
+' ==========================================
+' ENUMERADOS (Sin líneas de relación)
+' ==========================================
+enum EstadoProducto {
+    ACTIVO
+    OCULTO
+    BORRADOR
+    ELIMINADO
+}
+
+enum EstadoPedido {
+    PENDIENTE
+    PREPARADO
+    EN_REPARTO
+    RECOGIDO
+    ENTREGADO
+    CANCELADO
+}
+
+enum MetodoPago {
+    TARJETA
+    BIZUM
+    PAYPAL
+    APPLE_PAY
+    CONTRA_REEMBOLSO
+}
+
+enum MetodoEntrega {
+    DOMICILIO
+    PUNTO_RECOGIDA
+}
+
+enum EstadoIncidencia {
+    ABIERTA
+    ACEPTADA
+    RECHAZADA
+    CERRADA
+}
+
+enum TipoCompensacion {
+    REEMBOLSO
+    REENVIO_PRODUCTO
+}
+
+enum rolUsuario {
+     AGRICULTOR
+     CLIENTE
+     REPARTIDOR
+}
+
+' ==========================================
+' ENTIDADES DE USUARIOS
+' ==========================================
+abstract class Usuario {
+    + id: String
+    + nombre: String
+    + email: String
+    + telefono: String
+    + rol: RolUsuario
+    + contraseña: String
+    + iniciarSesion(email, contraseña): Boolean
+    + cerrarSesion()
+}
+
+class Cliente extends Usuario {
+    + registrarIncidencia(pedidoId, descripcion, evidencias)
+    + recibido(pedidoId)
+}
+
+class Agricultor extends Usuario {
+    + revisarIncidencia(incidenciaId)
+    + actualizarStock(productoId, nuevaCantidad)
+}
+
+class Repartidor extends Usuario {
+    + actualizarEstadoReparto(pedidoId, estado)
+    + entregado(pedidoId)
+}
+
+' ==========================================
+' ENTIDADES DE CATÁLOGO Y FEEDBACK
+' ==========================================
+class Producto {
+    + id: String
+    + nombre: String
+    + precioPorKg: Float
+    + stock: Float
+    + estado: EstadoProducto
+}
+
+class Reseña {
+    + id: String
+    + puntuacion: Integer
+    + comentario: String
+    + fecha: Date
+}
+
+' ==========================================
+' ENTIDADES DE COMPRA Y TRANSACCIONES
+' ==========================================
+class Carrito {
+    + id: String
+    + total: Float
+    + añadirProducto(productoId, cantidad)
+}
+
+class ItemCarrito {
+    + productoId: String
+    + cantidad: Float
+    + subtotal: Float
+}
+
+class Pedido {
+    + id: String
+    + totalPagado: Float
+    + estado: EstadoPedido
+    + metodoPago: MetodoPago
+    + metodoEntrega: MetodoEntrega
+    + codigoRecogida: String
+    + pinPedido: String
+    + cambiarEstado(nuevoEstado)
+}
+
+class ItemPedido {
+    + productoId: String
+    + cantidad: Float
+    + precioUnitario: Float
+    + subtotal: Float
+}
+
+class Pago {
+    + id: String
+    + importe: Float
+    + estado: String
+    + procesarReembolso()
+}
+
+' ==========================================
+' ENTIDADES DEL SISTEMA DE ACTIVIDADES
+' ==========================================
+class Incidencia {
+    + id: String
+    + pedidoId: String
+    + descripcion: String
+    + evidencias: List
+    + estado: EstadoIncidencia
+    + tipoCompensacion: TipoCompensacion
+    + evaluarResolucion(procedente: Boolean)
+}
+
+' ==========================================
+' RELACIONES ENTRE ENTIDADES (SOLO CLASES)
+' ==========================================
+
+' Relaciones de Clientes y Agricultores con el Catálogo
+Cliente "1" --> "0..*" Reseña : escribe
+Producto "1" *--> "0..*" Reseña : recibe
+Agricultor "1" --> "0..*" Producto : gestiona
+
+' Relaciones del Flujo de Compra
+Cliente "1" --> "1" Carrito : posee
+Carrito "1" *--> "0..*" ItemCarrito : contiene
+Cliente "1" --> "0..*" Pedido : realiza
+Pedido "1" *--> "1..*" ItemPedido : incluye
+Pedido "1" --> "1" Pago : requiere
+
+' Relaciones del Flujo de Incidencias
+Cliente "1" --> "0..*" Incidencia : reporta
+Incidencia "1" --> "1" Pedido : afecta
+Incidencia "1" --> "0..1" Pago : puede_disparar_reembolso
+
+@enduml

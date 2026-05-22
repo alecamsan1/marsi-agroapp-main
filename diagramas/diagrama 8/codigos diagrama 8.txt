@@ -1,0 +1,43 @@
+Diagrama actividad 8
+@startuml 
+
+title Actividad 8 – Gestión de valoraciones (Cliente)
+
+start
+
+:Acceder a un producto con pedido entregado;
+
+switch (¿Acción sobre valoración?)
+case (Crear reseña)
+  :Elegir número de estrellas\ny escribir comentario;
+  if (¿Añadir foto?) then (Sí)
+    :Subir foto del producto; 
+  else (No)
+  endif
+  if (¿Tipo de reseña?) then (Anónima)
+    :Marcar como anónima; 
+  else (Pública)
+  endif
+  :Publicar reseña;
+  :Actualizar valoración media del producto; 
+
+case (Editar reseña)
+  :Seleccionar reseña propia\nModificar texto, estrellas o fotos;
+  :Guardar cambios;
+  :Recalcular valoración media; 
+
+case (Eliminar reseña)
+  if (¿Confirmar eliminación?) then (Sí)
+    :Eliminar reseña;
+    :Recalcular valoración media; 
+  else (No)
+  endif
+
+case (Responder comentario)
+  :Seleccionar comentario\nEscribir y publicar respuesta;
+
+endswitch
+
+stop
+
+@enduml

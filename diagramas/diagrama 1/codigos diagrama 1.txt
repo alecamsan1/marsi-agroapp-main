@@ -1,0 +1,77 @@
+Diagrama actividad 1
+@startuml
+skinparam ArchimateBackgroundColor #ffffff
+title Diagrama de Actividad - Registro de Usuario 
+
+start
+
+:Abrir la aplicación;
+:Pulsar "Registrarse";
+:Seleccionar método de registro;
+
+if (¿Método elegido?) then (Email)
+  :Introducir datos;
+else (Apple / Google)
+  :Autenticarse con proveedor externo;
+  :Sistema obtiene datos automáticamente;
+endif
+
+:Verificar disponibilidad de correo;
+
+if (¿Correo ya existe?) then (Sí)
+  :Mostrar error "Correo ya registrado";
+else (No)
+  :Seleccionar rol\n(Cliente / Agricultor / Transportista);
+  :Aceptar términos y condiciones;
+  
+  :Crear cuenta y asignar rol;
+  :Enviar email de confirmación;
+endif
+
+:Redirigir a pantalla principal;
+stop
+
+@enduml
+
+Diagrama secuencia 1
+@startuml
+title Diagrama de Secuencia - Registro de Usuario (Actualizado)
+
+actor Usuario
+participant "App / Interfaz" as App
+participant "Sistema / Servidor" as Sistema
+participant "OAuth (Apple/Google)" as Auth
+
+== Paso 1: Autenticación e Inicio ==
+Usuario -> App: Abrir aplicación y pulsar "Registrarse"
+App --> Usuario: Mostrar opciones de registro (Email o RRSS)
+
+alt Registro por Email
+    Usuario -> App: Introducir datos (Nombre, correo, contraseña)
+    App -> Sistema: Verificar disponibilidad de correo
+else Registro por Apple / Google
+    Usuario -> App: Seleccionar Apple / Google
+    App -> Auth: Solicitar autenticación
+    Auth --> App: Devolver datos automáticamente (nombre, correo)
+    App -> Sistema: Verificar disponibilidad de correo
+end
+
+== Paso 2: Validación de Correo y Selección de Rol ==
+alt ¿Correo ya existe? -> Sí
+    Sistema --> App: Correo no disponible
+    App --> Usuario: Mostrar error "Correo ya registrado"
+else ¿Correo ya existe? -> No
+    Sistema --> App: Correo disponible
+    App --> Usuario: Solicitar selección de Rol y Términos
+    Usuario -> App: Seleccionar rol y aceptar términos
+    
+    == Paso 3: Creación de Cuenta ==
+    App -> Sistema: Confirmar registro con Rol y Términos aceptados
+    Sistema -> Sistema: Crear cuenta y asignar rol
+    Sistema -> Usuario: Enviar email de confirmación
+    Sistema --> App: Confirmación de cuenta creada con éxito
+end
+
+== Paso 4: Finalización ==
+App --> Usuario: Redirigir a pantalla principal
+@enduml

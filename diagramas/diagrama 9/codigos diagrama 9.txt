@@ -1,0 +1,62 @@
+Diagrama actividad 9
+@startuml actividad_09_gestion_perfil_cliente
+
+title Actividad 9 – Gestión de perfil (Cliente)
+
+start
+
+:Acceder a pantalla de perfil;
+
+switch (¿Sección a gestionar?)
+case (Datos personales)
+  :Editar nombre, apellidos o foto de perfil;
+  :Guardar cambios;
+
+case (Mis direcciones)
+  switch (¿Acción?)
+  case (Añadir)
+    :Introducir nueva dirección;
+    if (¿Marcar como predeterminada?) then (Sí)
+      :Actualizar dirección predeterminada; 
+    else (No)
+    endif
+    :Guardar dirección;
+  case (Editar)
+    :Modificar datos de la dirección;
+    :Actualizar dirección;
+  case (Eliminar)
+    if (¿Confirmar eliminación?) then (Sí)
+      :Eliminar dirección; 
+    else (No)
+    endif
+  endswitch
+
+case (Métodos de pago)
+  switch (¿Acción?)
+  case (Añadir)
+    :Seleccionar tipo de pago\nIntroducir datos;
+    :Validar y guardar método;
+  case (Eliminar)
+    if (¿Confirmar eliminación?) then (Sí)
+      :Eliminar método de pago; 
+    else (No)
+    endif
+  endswitch
+
+case (Historial de pedidos)
+  if (¿Filtrar por fecha?) then (Sí)
+    :Seleccionar rango de fechas\nVer pedidos filtrados;
+  else (No)
+    :Ver listado de pedidos;
+  endif
+  :Seleccionar pedido para ver detalle;
+
+case (Notificaciones y ajustes)
+  :Configurar preferencias de notificaciones;
+  :Guardar preferencias;
+
+endswitch
+
+stop
+
+@enduml

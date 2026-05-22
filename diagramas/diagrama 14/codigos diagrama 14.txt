@@ -1,0 +1,49 @@
+@startuml
+
+title Diagrama de Actividad: Ciclo de Vida del Pedido
+
+start
+
+:Realizar pedido y confirmar pago;
+:Crear pedido con estado "Pendiente";
+:Notificar al agricultor;
+:Revisar nuevo pedido;
+
+if (¿Aceptar pedido?) then (No)
+    :Rechazar pedido;
+    :Estado -> "Cancelado";
+    :Notificar al cliente;
+    :Iniciar reembolso;
+    :Recibir notificación de cancelación y reembolso;
+    end
+else (Sí)
+    :Aceptar pedido;
+    :Estado -> "Aceptado";
+    :Notificar al cliente;
+    :Preparar productos del pedido;
+    :Marcar checklist completo;
+    :Confirmar pedido preparado;
+    :Estado -> "Preparado";
+    :Asignar repartidor y notificar;
+    :Ver pedido asignado;
+    :Ir a recoger el pedido a la finca;
+    :Confirmar recogida en finca;
+    :Estado -> "En reparto";
+    :Notificar al cliente;
+    :Entregar pedido al cliente o punto de recogida;
+    :Confirmar entrega;
+    :Estado -> "Entregado";
+    :Notificar al cliente y al agricultor;
+    :Actualizar estadísticas;
+    :Recibir pedido;
+    
+    if (¿Dejar valoración?) then (Sí)
+        :Valorar producto y finca;
+        :Actualizar valoración media;
+    else (No)
+    endif
+    
+    stop
+endif
+
+@enduml

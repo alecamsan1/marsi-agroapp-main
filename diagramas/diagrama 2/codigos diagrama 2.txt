@@ -1,0 +1,130 @@
+Diagrama actividad 2
+@startuml
+skinparam ArchimateBackgroundColor #ffffff
+title Diagrama de Actividad - Inicio de Sesión y Recuperación
+
+start
+
+:Abrir la aplicación;
+:Pulsar "Iniciar sesión";
+:Seleccionar método de acceso;
+
+if (¿Método elegido?) then (Email y contraseña)
+  :Introducir correo y contraseña;
+  :Verificar credenciales;
+  
+  if (¿Credenciales correctas?) then (No)
+    :Mostrar error "Correo o contraseña incorrectos";
+    if (¿Quiere recuperar contraseña?) then (Sí)
+      :Pulsar "Recuperar contraseña";
+      :Introducir correo registrado;
+      :Verificar si el correo existe;
+      if (¿Correo existe?) then (No)
+        :Mostrar error "Correo no encontrado";
+        stop
+      else (Sí)
+        :Enviar email con enlace de recuperación;
+        :Abrir enlace del email;
+        :Introducir y confirmar nueva contraseña;
+        if (¿Contraseñas coinciden?) then (No)
+          :Mostrar error "Las contraseñas no coinciden";
+          stop
+        else (Sí)
+          :Actualizar contraseña;
+          :Mostrar "Contraseña actualizada correctamente";
+          :Volver a inicio de sesión;
+          stop
+        endif
+      endif
+    else (No)
+      :Volver al formulario;
+      stop
+    endif
+  else (Sí)
+    ' Continúa al flujo de éxito común
+  endif
+
+else (Apple / Google)
+  :Autenticarse con Apple o Google;
+  :Verificar cuenta vinculada;
+  if (¿Cuenta vinculada?) then (No)
+    :Mostrar error "No existe cuenta con ese proveedor";
+    stop
+  else (Sí)
+    ' Continúa al flujo de éxito común
+  endif
+endif
+
+:Identificar rol del usuario\n(Cliente / Agricultor / Transportista);
+if (¿Recordar sesión activada?) then (Sí)
+  :Guardar sesión en el dispositivo;
+else (No)
+endif
+
+:Redirigir a pantalla principal según rol;
+stop
+
+@enduml
+
+Diagrama secuencia 2
+@startuml
+title Diagrama de Secuencia - Inicio de Sesión y Recuperación
+
+actor Usuario
+participant "App / Interfaz" as App
+participant "Sistema / Servidor" as Sistema
+participant "OAuth (Apple/Google)" as Auth
+
+== Paso 1: Intento de Acceso ==
+Usuario -> App: Abrir app y pulsar "Iniciar sesión"
+App --> Usuario: Mostrar opciones de acceso
+
+alt Opción A: Inicio con Email y Contraseña
+    Usuario -> App: Introduce correo y contraseña
+    App -> Sistema: Verificar credenciales
+    
+    alt Credenciales Incorrectas
+        Sistema --> App: Credenciales inválidas
+        App --> Usuario: Mostrar error e intentar recuperar contraseña
+        
+        == Subproceso: Recuperación de Contraseña ==
+        Usuario -> App: Selecciona "Recuperar contraseña" e introduce correo
+        App -> Sistema: Verificar existencia del correo
+        
+        alt Correo no existe
+            Sistema --> App: Correo no encontrado
+            App --> Usuario: Mostrar error "Correo no encontrado"
+        else Correo existe
+            Sistema --> Usuario: Enviar email con enlace de recuperación
+            Usuario -> App: Abre enlace e introduce nueva contraseña
+            App -> Sistema: Actualizar contraseña
+            Sistema --> App: Confirmación de actualización
+            App --> Usuario: Mostrar "Contraseña actualizada" y volver a inicio
+        end
+    else Credenciales Correctas
+        Sistema --> App: Credenciales válidas (Ir a Paso 2)
+    end
+
+else Opción B: Inicio con Apple / Google
+    Usuario -> App: Selecciona Apple / Google
+    App -> Auth: Autenticar usuario
+    Auth --> App: Devolver token de autenticación
+    App -> Sistema: Verificar cuenta vinculada
+    
+    alt Cuenta no vinculada
+        Sistema --> App: Cuenta no existente
+        App --> Usuario: Mostrar error "No existe cuenta con ese proveedor"
+    else Cuenta vinculada
+        Sistema --> App: Cuenta válida (Ir a Paso 2)
+    end
+end
+
+== Paso 2: Éxito e Inicio de Sesión ==
+Sistema -> Sistema: Identificar rol del usuario
+alt ¿Recordar sesión activado? -> Sí
+    App -> App: Guardar sesión localmente en el dispositivo
+end
+Sistema --> App: Permitir acceso
+App --> Usuario: Redirigir a pantalla principal según rol
+
+@enduml

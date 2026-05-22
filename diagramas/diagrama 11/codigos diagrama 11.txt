@@ -1,0 +1,54 @@
+Diagrama actividad 11
+@startuml actividad_fusionada_gestion_productos_stock
+skinparam ArchimateBackgroundColor #ffffff
+title Diagrama de Actividad - Gestión de Productos y Stock 
+
+start
+
+:Acceder al panel principal;
+:Ver listado / stock actual del producto;
+:Seleccionar un producto;
+
+switch (¿Acción?)
+case (Editar)
+  :Modificar datos del producto;
+  :Guardar cambios;
+
+case (Stock)
+  switch (¿Acción sobre el stock?)
+  case (Actualizar)
+    :Introducir nueva cantidad;
+    :Guardar y comprobar umbral mínimo;
+    if (¿Stock bajo?) then (Sí)
+      :Avisar al agricultor;
+      :Marcar sin stock disponible;
+    else (No)
+    endif
+  case (Bloquear)
+    :Bloquear stock para pedidos pendientes;
+    :Confirmación de bloqueo;
+  case (Historial)
+    :Mostrar historial de entradas y salidas;
+  endswitch
+  :Ver stock actualizado;
+
+case (Ocultar)
+  :Marcar como oculto;
+
+case (Desactivar)
+  :Desactivar producto;
+
+case (Eliminar)
+  :Comprobar si tiene pedidos activos;
+  if (¿Tiene pedidos activos?) then (Sí)
+    :Mostrar aviso;
+  else (No)
+    :Eliminar producto;
+  endif
+
+case (Estadísticas)
+  :Ver estadísticas del producto;
+endswitch
+
+stop
+@enduml

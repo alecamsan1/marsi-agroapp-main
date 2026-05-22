@@ -1,0 +1,35 @@
+Diagrama actividad 10
+@startuml 
+
+title Actividad 10 – Publicación de producto (Agricultor)
+
+start
+
+:Acceder a pantalla "Subir producto";
+:Introducir nombre, categoría,\ndescripción, precio y stock;
+:Subir foto del producto;
+
+:Validar campos obligatorios;
+
+if (¿Campos completos?) then (No)
+  :Mostrar error\nCorregir datos; 
+  stop
+else (Sí)
+endif
+
+switch (¿Acción final?)
+case (Publicar ahora)
+  :Publicar producto\nHacer visible en la tienda;
+  :Mostrar confirmación publicado;
+case (Programar publicación)
+  :Seleccionar fecha y hora;
+  :Guardar producto como programado;
+  :Mostrar confirmación programado;
+case (Guardar borrador)
+  :Guardar producto como borrador;
+  :Mostrar confirmación borrador;
+endswitch
+
+stop
+
+@enduml

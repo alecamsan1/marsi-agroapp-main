@@ -1,0 +1,79 @@
+Diagrama actividad 5
+@startuml
+skinparam ArchimateBackgroundColor #ffffff
+title Diagrama de Actividad - Gestión del Carrito
+
+start
+
+:Acceder a la pantalla del carrito;
+
+if (¿El carrito está vacío?) then (Sí)
+  :Mostrar mensaje "Tu carrito está vacío";
+  :Volver a la pantalla principal o repetir último pedido;
+  stop
+else (No)
+  :Mostrar productos, subtotales y total;
+endif
+
+while (¿Desea modificar algún producto?) is (Sí)
+  :Cambiar cantidad o eliminar producto;
+  :Verificar stock y actualizar carrito;
+  :Recalcular totales;
+  :Mostrar carrito actualizado;
+endwhile (No)
+
+:Ver resumen final de la compra;
+
+if (¿Qué desea hacer?) then (Seguir comprando o Vaciar)
+  :Volver a la pantalla principal;
+  stop
+else (Proceder al pago)
+  :Navegar a la pantalla de pago;
+  stop
+endif
+
+@enduml
+
+Diagrama secuencia 5
+@startuml
+title Diagrama de Secuencia - Gestión del Carrito
+
+actor Cliente
+participant "App / Interfaz" as App
+participant "Sistema / Servidor" as Sistema
+
+== Paso 1: Entrada al Carrito ==
+Cliente -> App: Acceder a la pantalla del carrito
+App -> Sistema: Solicitar contenido del carrito
+Sistema --> App: Devolver datos del carrito
+
+alt ¿El carrito está vacío? -> Sí
+    App --> Cliente: Mostrar mensaje "Tu carrito está vacío"
+    Cliente -> App: Seleccionar "Volver" o "Repetir pedido"
+    App --> Cliente: Redirigir según la opción elegida
+else ¿El carrito está vacío? -> No
+    App --> Cliente: Mostrar lista de productos, subtotales y total
+end
+
+== Paso 2: Modificación de Productos (Bucle) ==
+loop Mientras el cliente modifique productos
+    Cliente -> App: Cambiar cantidad o eliminar un producto
+    App -> Sistema: Enviar actualización del producto
+    Sistema -> Sistema: Verificar stock disponible
+    Sistema -> Sistema: Recalcular subtotales y totales
+    Sistema --> App: Devolver carrito actualizado
+    App --> Cliente: Mostrar totales recalculados en pantalla
+end
+
+== Paso 3: Finalización / Checkout ==
+App --> Cliente: Mostrar resumen final de la compra
+
+alt ¿Qué desea hacer? -> Seguir comprando o Vaciar
+    Cliente -> App: Seleccionar seguir comprando / vaciar carrito
+    App --> Cliente: Redirigir a la pantalla principal
+else ¿Qué desea hacer? -> Proceder al pago
+    Cliente -> App: Pulsar "Proceder al pago"
+    App --> Cliente: Navegar a la pantalla de pago
+end
+
+@enduml

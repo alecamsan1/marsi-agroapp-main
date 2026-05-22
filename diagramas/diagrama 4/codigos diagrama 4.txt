@@ -1,0 +1,72 @@
+Diagrama actividad 4
+@startuml
+skinparam ArchimateBackgroundColor #ffffff
+title Diagrama de Actividad - Ver Detalle de Producto
+
+start
+
+:Pulsar sobre un producto en el listado;
+:Mostrar información detallada del producto\n(Foto, precio, descripción, reseñas, etc.);
+
+if (¿Hay stock disponible?) then (No)
+  :Mostrar aviso "Sin stock";
+  ' Cae directamente al flujo común de volver al listado
+else (Sí)
+  :Seleccionar cantidad;
+  
+  switch (¿Acción del cliente?)
+  case (Añadir al carrito)
+    :Añadir producto al carrito;
+
+  case (Guardar en deseos)
+    :Guardar en lista de deseos;
+
+  case (Nada)
+    ' No hace ninguna acción en el sistema, va directo a la salida
+  endswitch
+endif
+
+:Volver al listado de productos;
+stop
+
+@enduml
+
+Diagrama secuencia 4
+@startuml
+title Diagrama de Secuencia - Ver Detalle de Producto (Flujo Unificado)
+
+actor Cliente
+participant "App / Interfaz" as App
+participant "Sistema / Servidor" as Sistema
+
+== Paso 1: Carga del Detalle ==
+Cliente -> App: Pulsar sobre un producto
+App -> Sistema: Solicitar información y stock del producto
+Sistema --> App: Devolver datos (Foto, precio, descripción, reseñas, stock)
+
+alt ¿Hay stock? -> No
+    App --> Cliente: Mostrar aviso "Sin stock" y deshabilitar compra
+    ' Al no haber más interacción, el flujo continúa directo al Paso 3
+else ¿Hay stock? -> Sí
+    App --> Cliente: Mostrar detalle del producto
+    Cliente -> App: Seleccionar cantidad
+
+    == Paso 2: Acción del Cliente (Equivalente al Switch) ==
+    alt Caso: Añadir al carrito
+        Cliente -> App: Pulsar "Añadir al carrito"
+        App -> Sistema: Registrar cantidad y producto en el carrito
+        Sistema --> App: Confirmación de producto añadido
+        
+    else Caso: Guardar en deseos
+        Cliente -> App: Pulsar "Guardar en deseos"
+        App -> Sistema: Registrar producto en la lista de deseos
+        Sistema --> App: Confirmación de guardado
+        
+    else Caso: Nada
+    end
+end
+
+== Paso 3: Cierre Común ==
+App --> Cliente: Volver al listado de productos
+
+@enduml
