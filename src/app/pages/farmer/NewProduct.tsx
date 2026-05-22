@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { Camera, PackagePlus } from "lucide-react";
 import { useAppContext, Product } from "../../context/AppContext";
 import { motion } from "motion/react";
+import { useForm } from "react-hook-form";
 
 type NewProductForm = {
   name: string;
