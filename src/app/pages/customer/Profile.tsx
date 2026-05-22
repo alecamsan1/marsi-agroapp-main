@@ -1,62 +1,76 @@
-import React from "react";
-import { useNavigate } from "react-router";
-import { Settings, LogOut, ChevronRight, User as UserIcon, MapPin, CreditCard, Clock, Bell } from "lucide-react";
-import { motion } from "motion/react";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { User, Package, Settings, LogOut, ChevronRight } from 'lucide-react';
 
 export function Profile() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'info' | 'orders' | 'settings'>('info');
 
-  const menuItems = [
-    { icon: <MapPin className="w-5 h-5" />, label: "Mis Direcciones", route: "#" },
-    { icon: <CreditCard className="w-5 h-5" />, label: "Métodos de Pago", route: "#" },
-    { icon: <Clock className="w-5 h-5" />, label: "Historial de Pedidos", route: "/customer/order-history" },
-    { icon: <Bell className="w-5 h-5" />, label: "Notificaciones", route: "#" },
-    { icon: <Settings className="w-5 h-5" />, label: "Ajustes", route: "#" },
-  ];
+  const handleLogout = () => {
+    // Aquí iría tu lógica para borrar el token/usuario
+    // localStorage.removeItem('user');
+    navigate('/'); // Redirige a la pantalla de inicio
+  };
 
   return (
-    <div className="bg-gray-50 min-h-full pb-24">
-      <div className="bg-[#426b1f] px-6 pt-12 pb-16 rounded-b-[2rem] text-white flex flex-col items-center shadow-md relative">
-        <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-full mb-4 flex items-center justify-center shadow-inner">
-          <UserIcon className="w-10 h-10 text-white" />
-        </div>
-        <h1 className="text-2xl font-bold">Cliente Prueba</h1>
-        <p className="text-green-100 mt-1">cliente@agroapp.com</p>
+    <div className="min-h-screen bg-gray-50 p-6">
+      {/* Header con botón Logout */}
+      <header className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold">Mi Perfil</h1>
+        <button onClick={handleLogout} className="flex items-center gap-2 text-red-600 font-bold p-2">
+          <LogOut size={20} /> Salir
+        </button>
+      </header>
+
+      {/* Navegación de pestañas */}
+      <div className="flex gap-2 mb-6 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+        <button onClick={() => setActiveTab('info')} className={`flex-1 py-3 rounded-xl font-bold ${activeTab === 'info' ? 'bg-[#426b1f] text-white' : 'text-gray-500'}`}>Datos</button>
+        <button onClick={() => setActiveTab('orders')} className={`flex-1 py-3 rounded-xl font-bold ${activeTab === 'orders' ? 'bg-[#426b1f] text-white' : 'text-gray-500'}`}>Pedidos</button>
+        <button onClick={() => setActiveTab('settings')} className={`flex-1 py-3 rounded-xl font-bold ${activeTab === 'settings' ? 'bg-[#426b1f] text-white' : 'text-gray-500'}`}>Ajustes</button>
       </div>
 
-      <div className="px-6 -mt-8 relative z-10 space-y-4">
-        <div className="bg-white rounded-3xl p-2 shadow-sm border border-gray-100">
-          {menuItems.map((item, index) => (
-            <React.Fragment key={index}>
-              <button
-                className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors rounded-2xl"
-                onClick={() => {
-                  if (item.route !== "#") {
-                    navigate(item.route);
-                  }
-                }}
-              >
-                <div className="flex items-center gap-4 text-gray-700">
-                  <div className="w-10 h-10 bg-gray-50 flex items-center justify-center rounded-xl text-[#426b1f]">
-                    {item.icon}
-                  </div>
-                  <span className="font-semibold text-[15px]">{item.label}</span>
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-400" />
-              </button>
-              {index < menuItems.length - 1 && <div className="h-px bg-gray-50 mx-4" />}
-            </React.Fragment>
-          ))}
-        </div>
+      {/* Contenido dinámico */}
+      <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm min-h-[300px]">
+        
+        {activeTab === 'info' && (
+          <div className="space-y-4">
+            <h2 className="font-bold text-lg mb-4">Información Personal</h2>
+            <div className="p-4 bg-gray-50 rounded-xl">
+              <p className="text-xs text-gray-400 font-bold uppercase">Nombre</p>
+              <p className="font-bold">Juan Pérez</p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-xl">
+              <p className="text-xs text-gray-400 font-bold uppercase">Email</p>
+              <p className="font-bold">juan@ejemplo.com</p>
+            </div>
+          </div>
+        )}
 
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={() => navigate("/")}
-          className="w-full bg-white flex items-center justify-center gap-2 p-4 rounded-2xl shadow-sm border border-gray-100 text-red-500 font-bold mt-6"
-        >
-          <LogOut className="w-5 h-5" />
-          Cerrar Sesión
-        </motion.button>
+        {activeTab === 'orders' && (
+          <div className="space-y-4">
+            <h2 className="font-bold text-lg mb-4">Historial de Pedidos</h2>
+            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <p className="font-bold">Pedido #1234</p>
+              <span className="text-green-600 font-bold text-sm">Entregado</span>
+            </div>
+            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <p className="font-bold">Pedido #1235</p>
+              <span className="text-blue-600 font-bold text-sm">En camino</span>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div className="space-y-4">
+            <h2 className="font-bold text-lg mb-4">Preferencias</h2>
+            <button className="w-full flex justify-between items-center p-4 bg-gray-50 rounded-xl font-bold">
+              Notificaciones <ChevronRight size={20} />
+            </button>
+            <button className="w-full flex justify-between items-center p-4 bg-gray-50 rounded-xl font-bold">
+              Idioma <ChevronRight size={20} />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

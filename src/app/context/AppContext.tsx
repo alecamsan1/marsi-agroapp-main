@@ -30,7 +30,7 @@ export interface Order {
   id: string;
   items: OrderItem[];
   total: number;
-  status: "Recogido" | "En reparto" | "Entregado";
+  status: "En reparto" | "Entregado" | "Recogido" | "Cancelado" | "Pendiente" | "Preparado";
   address: string;
   city: string;
   zip: string;

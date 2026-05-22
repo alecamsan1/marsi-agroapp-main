@@ -1,81 +1,78 @@
-import React from "react";
-import { CheckCircle2, Clock } from "lucide-react";
-import { useAppContext } from "../../context/AppContext";
-import { motion } from "motion/react";
+import React, { useState } from 'react';
+import { Package, Truck, CheckCircle, XCircle, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAppContext } from '../../context/AppContext';
 
 export function FarmerOrders() {
   const { orders, updateOrderStatus } = useAppContext();
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+
+  const handleStatusChange = (id: string, newStatus: string) => {
+    updateOrderStatus(id, newStatus as any);
+    setSelectedOrder(null);
+  };
 
   return (
-    <div className="bg-gray-50 min-h-full flex flex-col">
-      <div className="bg-[#426b1f] px-6 pt-12 pb-6 shadow-sm sticky top-0 z-10 rounded-b-3xl">
-        <h1 className="text-2xl font-bold text-white tracking-tight">Pedidos Recibidos</h1>
-        <p className="text-green-100 font-medium text-sm mt-1">Gestiona lo que has vendido</p>
-      </div>
+    <div className="min-h-screen bg-gray-50 pb-10">
+      <header className="bg-white px-6 py-5 border-b border-gray-100 sticky top-0 z-10">
+        <h1 className="text-xl font-bold">{selectedOrder ? "Gestión de Ciclo" : "Pedidos en Curso"}</h1>
+      </header>
 
-      <div className="p-6 space-y-4 flex-1 overflow-y-auto pb-24">
-        {orders.length === 0 ? (
-          <div className="text-center text-gray-400 py-12">No hay pedidos recientes</div>
-        ) : (
-          orders.map(order => (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              key={order.id} 
-              className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100"
-            >
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-bold tracking-wider font-mono">
-                    {order.id}
-                  </span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide ${
-                    order.status === 'Recogido' ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'
-                  }`}>
-                    {order.status}
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-2 mb-4">
-                {order.items.map(item => (
-                  <div key={item.product.id} className="flex justify-between text-sm">
-                    <span className="text-gray-600 font-medium">
-                      {item.quantity}kg x {item.product.name}
-                    </span>
-                    <span className="text-gray-900 font-bold">
-                      {(item.product.pricePerKg * item.quantity).toFixed(2)}€
-                    </span>
+      <main className="p-4 max-w-lg mx-auto">
+        <AnimatePresence mode="wait">
+          {!selectedOrder ? (
+            <motion.div key="list" className="space-y-3">
+              {orders.map((order: any) => (
+                <button key={order.id} onClick={() => setSelectedOrder(order)} className="w-full bg-white p-5 rounded-3xl border border-gray-100 flex items-center justify-between shadow-sm">
+                  <div>
+                    <p className="font-bold text-gray-900">#{order.id}</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase">{order.status}</p>
                   </div>
-                ))}
-              </div>
+                  <ChevronRight className="text-gray-300" />
+                </button>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div key="detail" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+              <button onClick={() => setSelectedOrder(null)} className="flex items-center gap-2 font-bold text-gray-500 text-sm">
+                <ArrowLeft size={16} /> Volver
+              </button>
 
-              <div className="h-px bg-gray-100 w-full mb-4" />
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-gray-500 font-semibold uppercase">Total del pedido</p>
-                  <p className="text-[#426b1f] font-black text-xl">{order.total.toFixed(2)}€</p>
-                </div>
+              <div className="bg-white p-6 rounded-3xl border border-gray-100">
+                <h2 className="text-lg font-black mb-4">Estado actual: {selectedOrder.status}</h2>
                 
-                {order.status === "Recogido" ? (
-                  <button 
-                    onClick={() => updateOrderStatus(order.id, "En reparto")}
-                    className="bg-[#426b1f] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md shadow-green-900/20 flex items-center gap-2 transition-all hover:bg-green-800"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    Preparado
-                  </button>
-                ) : (
-                  <span className="text-green-600 font-bold text-sm flex items-center gap-1.5 bg-green-50 px-3 py-1.5 rounded-lg">
-                    <Clock className="w-4 h-4" /> Listo
-                  </span>
-                )}
+                {/* Lógica del Ciclo de Vida (Diagrama 14) */}
+                <div className="space-y-3">
+                  {selectedOrder.status === 'Pendiente' && (
+                    <>
+                      <button onClick={() => handleStatusChange(selectedOrder.id, 'Aceptado')} className="w-full bg-green-600 text-white p-4 rounded-xl font-bold">Aceptar Pedido</button>
+                      <button onClick={() => handleStatusChange(selectedOrder.id, 'Cancelado')} className="w-full bg-red-100 text-red-600 p-4 rounded-xl font-bold">Rechazar Pedido</button>
+                    </>
+                  )}
+
+                  {selectedOrder.status === 'Aceptado' && (
+                    <button onClick={() => handleStatusChange(selectedOrder.id, 'Preparado')} className="w-full bg-blue-600 text-white p-4 rounded-xl font-bold flex items-center justify-center gap-2">
+                      <Package size={18} /> Confirmar Preparación
+                    </button>
+                  )}
+
+                  {selectedOrder.status === 'Preparado' && (
+                    <button onClick={() => handleStatusChange(selectedOrder.id, 'En reparto')} className="w-full bg-[#426b1f] text-white p-4 rounded-xl font-bold flex items-center justify-center gap-2">
+                      <Truck size={18} /> Asignar Repartidor
+                    </button>
+                  )}
+
+                  {selectedOrder.status === 'En reparto' && (
+                    <div className="p-4 bg-gray-50 rounded-xl text-center text-gray-500 font-bold flex items-center justify-center gap-2">
+                      <Clock size={18} /> Esperando entrega al cliente
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
-          ))
-        )}
-      </div>
+          )}
+        </AnimatePresence>
+      </main>
     </div>
   );
 }
